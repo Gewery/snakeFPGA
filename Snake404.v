@@ -395,18 +395,18 @@ endfunction
 
 
 reg pressed = 0; //Indicator of pressing button
-reg applied = 0;
+reg applied = 0; // 1 if current button-press applied on current move
 
 //Block for changing direction depending on which button is pressed
 
 always @(posedge clockInp)
 begin
 
-    // Initialization of variables for correct dealing with pressing of buttons
-    if (clockInp_count == 0)
-        applied = 0; // Did current button-press applied on this move?
+    // Set indicators to deafult for correct dealing with pressing of buttons
+    if (clockInp_count == 20000*delay)
+        applied = 0; 
     if (KEY[0] == 1 && KEY[1] == 1)
-        pressed = 0; // Was buttons pressed on previous clockInp?
+        pressed = 0;
 
 	 //If player pressed one button, change direction to right
 	 

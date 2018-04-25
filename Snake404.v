@@ -395,17 +395,25 @@ endfunction
 
 
 reg pressed = 0; //Indicator of pressing button
+reg applied = 0;
 
 //Block for changing direction depending on which button is pressed
 
-always @(posedge move_clk)
+always @(posedge clockInp)
 begin
+
+    // Initialization of variables for correct dealing with pressing of buttons
+    if (clockInp_count <= 2)
+        applied = 0; // Did current button-press applied on this move?
+    if (KEY[0] == 1 || KEY[1] == 1)
+        pressed = 0; // Was buttons pressed on previous clockInp?
 
 	 //If player pressed one button, change direction to right
 	 
-    if (KEY[0] == 0 && ~pressed && apple_blink > 0)
+    if (KEY[0] == 0 && ~pressed && ~applied)
     begin
         pressed = 1;
+        applied = 1;
         if (direction == 0)
         begin
             if (horizontal == 0)
@@ -436,9 +444,10 @@ begin
 	 
 	 //If player pressed another button, change direction to left
 
-    if (KEY[1] == 0 && ~pressed && apple_blink > 0)
+    if (KEY[1] == 0 && ~pressed && ~applied)
     begin
         pressed = 1;
+        applied = 1;
         if (direction == 0)
         begin
             if (horizontal == 0)
@@ -466,14 +475,6 @@ begin
             end
         end
     end
-	 
-	 //Set default value after clock cycle
-	 
-    if (apple_blink == 4)
-    begin
-        pressed = 0;
-    end
-	 
 end
 
 endmodule

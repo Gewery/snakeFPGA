@@ -405,7 +405,7 @@ begin
     // Initialization of variables for correct dealing with pressing of buttons
     if (clockInp_count <= 2)
         applied = 0; // Did current button-press applied on this move?
-    if (KEY[0] == 1 || KEY[1] == 1)
+    if (KEY[0] == 1 && KEY[1] == 1)
         pressed = 0; // Was buttons pressed on previous clockInp?
 
 	 //If player pressed one button, change direction to right

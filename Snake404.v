@@ -403,7 +403,7 @@ always @(posedge clockInp)
 begin
 
     // Set indicators to deafult for correct dealing with pressing of buttons
-    if (clockInp_count == 20000*delay)
+    if (clockInp_count == 20000*delay - 1)
         applied = 0; 
     if (KEY[0] == 1 && KEY[1] == 1)
         pressed = 0;

@@ -2,15 +2,17 @@ module Snake404
 (
 input [1:0] KEY , // keys
 input clockInp, // clock
-output reg [47:0] HEX // displays
+output reg [47:0] HEX, // displays
+output reg [9:0] LED //led's
 );
 
 
-//Turn off all HEX's
+//Turn off all HEXs and LEDs
 
 initial
 begin
     HEX = 48'hFFFFFFFFFFFF;
+	 LED = 10'b0;
 end
 
 integer clockInp_count = 0; //Number of clock cycles
@@ -75,6 +77,8 @@ integer apple_blink = 0; //Define the frequecy of blinking "apple"
 
 integer i;
 
+integer number = 1; //Number of current level
+
 //Main logic of game
 
 always @(negedge move_clk)
@@ -103,6 +107,14 @@ begin
 	 //If we continue game
 	 
     begin
+		 
+		  //Show number of current level
+		  
+		  for(i = 0; i < 10; i = i + 1)
+		   begin
+				if(i < number)
+					LED[i] = 1;
+			end
 
 		  //Show blinking "apple"
 		  
@@ -247,6 +259,8 @@ begin
 								
                         end_game = 1; //Indicator of ending game
 								
+								number = number + 1; //Increase number of level
+																
                     end
                 end
             end
@@ -274,6 +288,8 @@ begin
                 cross_turn_right = 0;
                 cross_turn_left = 0;
                 cross_tail = 0;
+					 number = 1;
+					 LED = 10'b0;
 					 
             end
         end
@@ -395,17 +411,25 @@ endfunction
 
 
 reg pressed = 0; //Indicator of pressing button
+reg applied = 0; // 1 if current button-press applied on current move
 
 //Block for changing direction depending on which button is pressed
 
-always @(posedge move_clk)
+always @(posedge clockInp)
 begin
+
+    // Set indicators to deafult for correct dealing with pressing of buttons
+    if (clockInp_count == 20000*delay - 1)
+        applied = 0; 
+    if (KEY[0] == 1 && KEY[1] == 1)
+        pressed = 0;
 
 	 //If player pressed one button, change direction to right
 	 
-    if (KEY[0] == 0 && ~pressed && apple_blink > 0)
+    if (KEY[0] == 0 && ~pressed && ~applied)
     begin
         pressed = 1;
+        applied = 1;
         if (direction == 0)
         begin
             if (horizontal == 0)
@@ -436,9 +460,10 @@ begin
 	 
 	 //If player pressed another button, change direction to left
 
-    if (KEY[1] == 0 && ~pressed && apple_blink > 0)
+    if (KEY[1] == 0 && ~pressed && ~applied)
     begin
         pressed = 1;
+        applied = 1;
         if (direction == 0)
         begin
             if (horizontal == 0)
@@ -466,14 +491,6 @@ begin
             end
         end
     end
-	 
-	 //Set default value after clock cycle
-	 
-    if (apple_blink == 4)
-    begin
-        pressed = 0;
-    end
-	 
 end
 
 endmodule
